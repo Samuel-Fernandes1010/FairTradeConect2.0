@@ -67,14 +67,15 @@ Siga os comandos abaixo para configurar o ambiente e rodar a aplicação localme
 
 ## 5. Links Oficiais
 
-**Equipe Beta (Dev Team):**
+*   **Repositório GitHub:** https://github.com/Samuel-Fernandes1010/FairTradeConect2.0
+*   **Quadro de Gestão Ágil (Trello):** https://trello.com/invite/b/69221ddc701f5732f5ddc266/ATTI4e231d2d74e8e39c150aabd27a36e38fF7C763AF/projeto-integrador-comercio-justo
+*   **Pasta de Documentação Complementar e Vídeo (Drive):** https://drive.google.com/drive/folders/1I2AyY405KoSm-0OvdGsQ08WFenDVW1n3
+
+## 6. Equipe Beta
+*   
 *   **Danielle Santa Brígida** – Scrum Master, Dev Team.
 *   **Samuel Gomes Fernandes** – Product Owner, Dev Team.
 *   **Petter Wesley** – Dev Team (Responsável pela configuração do ambiente e implementação inicial).
 
-### Links Oficiais do Projeto
-*   **Repositório GitHub:** https://github.com/Samuel-Fernandes1010/FairTradeConect2.0
-*   **Quadro de Gestão Ágil (Trello):** https://trello.com/invite/b/69221ddc701f5732f5ddc266/ATTI4e231d2d74e8e39c150aabd27a36e38fF7C763AF/projeto-integrador-comercio-justo
-*   **Pasta de Documentação Complementar e Vídeo (Drive):** https://drive.google.com/drive/folders/1I2AyY405KoSm-0OvdGsQ08WFenDVW1n3
 
 **Licença:** MIT.
