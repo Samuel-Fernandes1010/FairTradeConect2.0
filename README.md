@@ -72,7 +72,7 @@ Siga os comandos abaixo para configurar o ambiente e rodar a aplicação localme
 *   **Pasta de Documentação Complementar e Vídeo (Drive):** https://drive.google.com/drive/folders/1I2AyY405KoSm-0OvdGsQ08WFenDVW1n3
 
 ## 6. Equipe Beta
-*   
+
 *   **Danielle Santa Brígida** – Scrum Master, Dev Team.
 *   **Samuel Gomes Fernandes** – Product Owner, Dev Team.
 *   **Petter Wesley** – Dev Team (Responsável pela configuração do ambiente e implementação inicial).
