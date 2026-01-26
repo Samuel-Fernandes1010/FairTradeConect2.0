@@ -1,0 +1,491 @@
+{% extends 'comerciojusto/base.html' %}
+{% load static %}
+
+{% block title %}Perfil & Feed - Amazônia Marketing & Consultoria{% endblock %}
+
+{% block extra_head %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/custom.js"></script>
+  <style>
+    .profile-logo-edit {
+      position: relative;
+      display: inline-block;
+    }
+    .edit-photo-btn {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 5px 15px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .profile-logo-edit:hover .edit-photo-btn {
+      display: block;
+    }
+    :root {
+      --primary: #7a9d3d;
+      --secondary: #5a7a2f;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+    }
+    .profile-container {
+      max-width: 1100px;
+      margin: 40px auto;
+    }
+    .profile-header {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .profile-logo {
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      margin: 0 auto 20px;
+      overflow: hidden;
+    }
+    .profile-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile-name {
+      font-size: 32px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .profile-type {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    .profile-email {
+      color: #666;
+      font-size: 16px;
+    }
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+    .section h3 {
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 20px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 15px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .form-group textarea,
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .form-group textarea:focus,
+    .form-group input:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(122, 157, 61, 0.1);
+    }
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .btn-save {
+      background: var(--primary);
+      color: white;
+      padding: 12px 40px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-save:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+    }
+    .product-card {
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s;
+      background: white;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    .product-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      overflow: hidden;
+    }
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .product-body {
+      padding: 20px;
+    }
+    .product-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .product-price {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div id="modal-carrinho" class="modal" tabindex="-1" style="display:none; background:rgba(0,0,0,0.5); position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:9999;">
+  <div style="background:#fff; max-width:400px; margin:10% auto; padding:30px; border-radius:10px; text-align:center;">
+    <h5>Produto adicionado ao carrinho!</h5>
+    <p>Deseja continuar comprando ou ir para o carrinho?</p>
+    <button id="continuar-comprando" type="button" class="btn btn-success" style="margin:10px;">Continuar comprando</button>
+    <a href="{% url 'visualizar_carrinho' %}" class="btn btn-primary" style="margin:10px;">Ir para o carrinho</a>
+  </div>
+</div>
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="profile-logo">
+      {% if perfil.logo %}
+        <img src="{{ perfil.logo.url }}" alt="Logo">
+      {% else %}
+        👨‍💼
+      {% endif %}
+    </div>
+    <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
+    <div class="profile-type">
+      {% if perfil.tipo == 'produtor' %}
+        🌱 Produtor
+      {% else %}
+        🏢 Empresa
+      {% endif %}
+    </div>
+    <div class="profile-email">{{ user.email }}</div>
+    <div style="margin-top:10px; color:#666;">{{ perfil.descricao }}</div>
+    
+    <!-- Botões de Navegação Fixos -->
+    <div style="margin-top: 25px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+      <a href="{% url 'meu_perfil' %}" class="btn btn-primary" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border: none; padding: 12px 25px; font-weight: 600; border-radius: 8px; text-decoration: none; color: white; display: inline-block; transition: transform 0.3s;">
+        <i class="fas fa-user-edit"></i> Editar Perfil
+      </a>
+      <a href="{% url 'caixa_entrada' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #4a90e2 0%, #357ab7 100%); border: none; padding: 12px 25px; font-weight: 600; border-radius: 8px; text-decoration: none; color: white; display: inline-block; transition: transform 0.3s;">
+        <i class="fas fa-envelope"></i> Caixa de Entrada
+      </a>
+      <a href="{% url 'visualizar_carrinho' %}" class="btn btn-primary" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); border: none; padding: 12px 25px; font-weight: 600; border-radius: 8px; text-decoration: none; color: white; display: inline-block; transition: transform 0.3s;">
+        <i class="fas fa-shopping-cart"></i> Carrinho
+      </a>
+    </div>
+  </div>
+
+            <!-- Área de Produtos (para produtor e empresa) -->
+            {% if perfil.tipo == 'produtor' or perfil.tipo == 'empresa' %}
+            <div class="section">
+              <h3>➕ Adicionar Produto</h3>
+              {% if erro_produto %}
+                <div class="alert alert-danger">{{ erro_produto }}</div>
+              {% endif %}
+              <form method="POST" enctype="multipart/form-data" action="#">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <input type="text" name="nome_produto" class="form-control" placeholder="Nome do Produto" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <input type="number" name="preco_produto" class="form-control" placeholder="Preço em R$" step="0.01" min="0" required>
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <input type="file" name="imagem_produto" class="form-control" accept="image/*">
+                  </div>
+                  <div class="col-md-12 mb-2">
+                    <textarea name="descricao_produto" class="form-control" placeholder="Descrição do Produto" rows="2"></textarea>
+                  </div>
+                  <div class="col-md-6 mb-2">
+                    <select name="categoria_produto" class="form-control" required>
+                      <option value="">Selecione o tipo</option>
+                      <option value="verduras">Verdura, folhas e ervas</option>
+                      <option value="legumes">Legumes Orgânicos</option>
+                      <option value="frutas">Frutas Orgânicas</option>
+                      <option value="condimentos">Condimento & Tempero regional</option>
+                      <option value="mercearia">Mercearia Orgânica</option>
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Adicionar Produto</button>
+              </form>
+            </div>
+
+            <!-- Lista de Produtos Cadastrados -->
+            <div class="section">
+              <h3>📦 Meus Produtos Cadastrados</h3>
+              <div class="row">
+                {% if produtos and produtos.count > 0 %}
+                  {% for produto in produtos %}
+                  <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                      <div class="product-image">
+                        {% if produto.imagem %}
+                          <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                        {% else %}
+                          <i class="fas fa-box-open" style="color: var(--primary);"></i>
+                        {% endif %}
+                      </div>
+                      <div class="product-body">
+                        <h5 class="product-name">{{ produto.nome }}</h5>
+                        <p class="product-price">R$ {{ produto.preco }}</p>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                          {{ produto.descricao|truncatewords:15 }}
+                        </p>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                          <a href="{% url 'detalhes_produto' produto.id_produto %}" class="btn btn-sm btn-outline-primary" style="flex: 1;">
+                            <i class="fas fa-eye"></i> Ver
+                          </a>
+                          <form method="POST" style="flex: 1; margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="excluir_produto_id" value="{{ produto.id_produto }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" style="width: 100%;" onclick="return confirm('Tem certeza que deseja excluir este produto?')">
+                              <i class="fas fa-trash"></i> Excluir
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="col-12">
+                    <div class="empty-state">
+                      <i class="fas fa-box-open"></i>
+                      <p>Nenhum produto cadastrado ainda. Use o formulário acima para adicionar seus produtos!</p>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Lista de Pedidos (para produtor e empresa) -->
+            {% if perfil.tipo == 'empresa' or perfil.tipo == 'produtor' %}
+            <div class="section">
+              <h3>🛒 Pedidos Recebidos</h3>
+              <p class="text-muted">Pedidos de produtos cadastrados por você</p>
+              <div class="table-responsive">
+                {% if pedidos and pedidos.count > 0 %}
+                  <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Produtos</th>
+                        <th>Quantidades</th>
+                        <th>Valor Total</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for pedido in pedidos %}
+                        {% with total=0 %}
+                        <tr>
+                          <td><strong>#{{ pedido.id_pedido }}</strong></td>
+                          <td>
+                            <i class="fas fa-user"></i> 
+                            {{ pedido.usuario.get_full_name|default:pedido.usuario.username }}
+                            <br><small class="text-muted">{{ pedido.usuario.email }}</small>
+                          </td>
+                          <td>
+                            <ul style="padding-left:18px; margin:0; list-style:none;">
+                              {% for item in pedido.itempedido_set.all %}
+                                <li><i class="fas fa-box"></i> {{ item.produto.nome }}</li>
+                              {% endfor %}
+                            </ul>
+                          </td>
+                          <td>
+                            <ul style="padding-left:18px; margin:0; list-style:none;">
+                              {% for item in pedido.itempedido_set.all %}
+                                <li>x{{ item.quantidade }} un</li>
+                              {% endfor %}
+                            </ul>
+                          </td>
+                          <td>
+                            <ul style="padding-left:18px; margin:0; list-style:none;">
+                              {% for item in pedido.itempedido_set.all %}
+                                <li>R$ {{ item.produto.preco }} x {{ item.quantidade }} = 
+                                  <strong>R$ {% widthratio item.produto.preco 1 item.quantidade %}</strong>
+                                </li>
+                              {% endfor %}
+                            </ul>
+                          </td>
+                          <td>
+                            {% if pedido.status == 'solicitado' %}
+                              <span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> Solicitado</span>
+                            {% elif pedido.status == 'a_caminho' %}
+                              <span class="badge bg-info text-dark"><i class="fas fa-truck"></i> A Caminho</span>
+                            {% elif pedido.status == 'entregue' %}
+                              <span class="badge bg-success"><i class="fas fa-check"></i> Entregue</span>
+                            {% else %}
+                              <span class="badge bg-secondary">{{ pedido.get_status_display }}</span>
+                            {% endif %}
+                          </td>
+                          <td><small>{{ pedido.data_pedido|date:'d/m/Y' }}<br>{{ pedido.data_pedido|time:'H:i' }}</small></td>
+                        </tr>
+                        {% endwith %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <div class="empty-state">
+                    <i class="fas fa-shopping-cart" style="font-size:48px; color:#ccc;"></i>
+                    <h5 style="margin-top:15px;">Nenhum pedido recebido ainda.</h5>
+                    <p class="text-muted">Os pedidos dos seus produtos aparecerão aqui.</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+    <div class="section">
+      <h3>📞 Informações de Contato</h3>
+      <div style="line-height: 2;">
+        <div>
+          <strong>Email:</strong> {{ user.email }}
+        </div>
+        {% if user.first_name %}
+          <div>
+            <strong>Nome:</strong> {{ user.first_name }}
+          </div>
+        {% endif %}
+        <div>
+
+            <!-- Certificações -->
+            <div class="section">
+              <h3>🏅 Certificações</h3>
+              <p class="text-muted">As certificações devem ser vinculadas a um produto específico</p>
+              <form method="POST" enctype="multipart/form-data" style="margin-bottom:20px;">
+                {% csrf_token %}
+                {% if erro_certificacao %}
+                  <div class="alert alert-danger">{{ erro_certificacao }}</div>
+                {% endif %}
+                <input type="hidden" name="nova_certificacao" value="1">
+                <div class="row">
+                  <div class="col-md-5 mb-2">
+                    <label class="form-label">Produto *</label>
+                    <select name="produto_certificacao" class="form-select" required>
+                      <option value="">Selecione um produto</option>
+                      {% for produto in produtos %}
+                        <option value="{{ produto.id_produto }}">{{ produto.nome }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-2">
+                    <label class="form-label">Validade (opcional)</label>
+                    <input type="date" name="validade_certificacao" class="form-control" placeholder="Validade (opcional)">
+                  </div>
+                  <div class="col-md-3 mb-2">
+                    <label class="form-label">Arquivo *</label>
+                    <input type="file" name="arquivo_certificado" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar para Análise</button>
+              </form>
+              <div>
+                {% if certificacoes %}
+                  {% for cert in certificacoes %}
+                    <div class="card mb-2">
+                      <div class="card-body">
+                        <strong>Produto: {{ cert.produto.nome }}</strong> - 
+                        <span class="badge 
+                          {% if cert.status == 'aprovada' %}bg-success
+                          {% elif cert.status == 'reprovada' %}bg-danger
+                          {% elif cert.status == 'enviado_analise' %}bg-warning text-dark
+                          {% else %}bg-secondary{% endif %}">
+                          {{ cert.get_status_display }}
+                        </span>
+                        {% if cert.validade %}<br>Válida até {{ cert.validade|date:'d/m/Y' }}{% endif %}
+                        {% if cert.arquivo_certificado %}<br><a href="{{ cert.arquivo_certificado.url }}" target="_blank" class="btn btn-sm btn-outline-primary mt-1">Ver Arquivo</a>{% endif %}
+                        {% if cert.status == 'reprovada' and cert.parecer %}<br><span class="text-danger mt-2">Parecer: {{ cert.parecer }}</span>{% endif %}
+                        {% if cert.status == 'aprovada' %}<br><span class="badge bg-success mt-1">Exibida no perfil público</span>{% endif %}
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="empty-state">Nenhuma certificação cadastrada.</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Avaliações da Loja -->
+            <div class="section">
+              <h3>⭐ Avaliações da Loja</h3>
+              <div>
+                {% if perfil.avaliacoes.all %}
+                  {% for avaliacao in perfil.avaliacoes.all %}
+                    <div class="card mb-2">
+                      <div class="card-body">
+                        <span style="color:gold; font-size:18px;">{% for i in "12345"|slice:":avaliacao.estrelas" %}★{% endfor %}</span>
+                        <span style="color:#555;">{{ avaliacao.comentario }}</span>
+                        <div style="font-size:12px; color:#aaa;">{{ avaliacao.usuario.username }} - {{ avaliacao.data_avaliacao|date:'d/m/Y H:i' }}</div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="empty-state">Nenhuma avaliação ainda.</div>
+                {% endif %}
+              </div>
+            </div>
+          <a href="{% url 'logout' %}" class="btn btn-danger" style="margin-top: 20px;">🚪 Sair da Conta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
