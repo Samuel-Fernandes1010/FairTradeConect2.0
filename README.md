@@ -65,7 +65,7 @@ Siga os comandos abaixo para configurar o ambiente e rodar a aplicação localme
 
 ---
 
-## 5. Rodapé e Links Oficiais
+## 5. Links Oficiais
 
 **Equipe Beta (Dev Team):**
 *   **Danielle Santa Brígida** – Scrum Master, Dev Team.
