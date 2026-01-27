@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
-from comerciojusto.models import Produto
+from comerciojusto.models import Produto, Carrinho
 
 # Configurar a chave secreta do Stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -13,24 +13,37 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 @login_required
 def criar_checkout(request):
     """Cria uma sessão de checkout do Stripe"""
-    carrinho = request.session.get('carrinho', {})
-    if not carrinho:
+    # Buscar carrinho do banco de dados
+    if request.user.is_authenticated:
+        carrinho_obj = Carrinho.objects.filter(usuario=request.user).first()
+    else:
+        sessao_id = request.session.session_key
+        carrinho_obj = Carrinho.objects.filter(sessao_id=sessao_id).first()
+    
+    if not carrinho_obj or not carrinho_obj.itens:
         messages.warning(request, 'Seu carrinho está vazio.')
         return redirect('visualizar_carrinho')
+    
+    carrinho = carrinho_obj.itens
     
     try:
         line_items = []
         
         # Iterar pelos itens do carrinho
-        for produto_id, quantidade in carrinho.items():
+        for produto_id, item_data in carrinho.items():
             produto = Produto.objects.get(id_produto=produto_id)
+            quantidade = item_data.get('quantidade', 1)
+            
+            product_data = {'name': produto.nome}
+            
+            # Adicionar descrição apenas se não estiver vazia
+            if produto.descricao and produto.descricao.strip():
+                product_data['description'] = produto.descricao[:100]
+            
             line_items.append({
                 'price_data': {
                     'currency': 'brl',
-                    'product_data': {
-                        'name': produto.nome,
-                        'description': produto.descricao[:100] if produto.descricao else '',
-                    },
+                    'product_data': product_data,
                     'unit_amount': int(produto.preco * 100),  # Converter para centavos
                 },
                 'quantity': quantidade,
