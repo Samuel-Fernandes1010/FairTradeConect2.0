@@ -134,7 +134,7 @@
     
     .btn-checkout {
       background: var(--primary);
-      color: white;
+      color: white !important;
       padding: 15px 40px;
       border: none;
       border-radius: 8px;
@@ -144,10 +144,17 @@
       width: 100%;
       margin-top: 20px;
       transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      position: relative;
+      z-index: 10;
     }
     
     .btn-checkout:hover {
       background: var(--secondary);
+      color: white !important;
+      text-decoration: none;
     }
     
     .btn-checkout:disabled {
